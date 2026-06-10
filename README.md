@@ -184,15 +184,16 @@ SOD2 for example has log2FC = −1.57 (real effect) but padj = 0.053 (just above
 
 ## References
 
-1. Pihlajamäki J, et al. (2011). *J Clin Endocrinol Metab*, 94(9):3521–9 — GSE15653
-2. Rolo AP, Palmeira CM. (2006). *Toxicol Appl Pharmacol*, 212(2):167–78
-3. Pitocco D, et al. (2013). *Int J Mol Sci*, 14(11):21525–50
-4. Ashkavand Z, et al. (2012). *J Diabetes Metab Disord*, 11:5
-5. Satapati S, et al. (2015). *J Clin Invest*, 125(12):4447–62
-6. Kanehisa M, Goto S. (2000). *Nucleic Acids Res*, 28(1):27–30 — KEGG
-7. Ashburner M, et al. (2000). *Nat Genet*, 25(1):25–29 — GO
-8. Kuleshov MV, et al. (2016). *Nucleic Acids Res*, 44(W1):W90–97 — Enrichr
-9. NCBI GEO. GSE15653. ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE15653
+1. Pihlajamäki J, Boes T, Kim EY, et al. (2009). Thyroid hormone-related regulation of gene expression in human fatty liver. *J Clin Endocrinol Metab*, 94(9):3521–3529. — *Source of dataset GSE15653*
+2. Rolo AP, Palmeira CM. (2006). Diabetes and mitochondrial function: role of hyperglycemia and oxidative stress. *Toxicol Appl Pharmacol*, 212(2):167–178. — *Cited for: T2DM mechanisms, TFAM, insulin resistance*
+3. Pitocco D, Zaccardi F, Di Stasio E, et al. (2013). Oxidative stress, nitric oxide, and diabetes. *Rev Diabet Stud*, 7(1):15–25. — *Cited for: glutathione depletion in diabetes, GPX1, GSR, GCLM*
+4. Ashkavand Z, Malekinejad H, Amniattalab A, et al. (2012). Silymarin potentiates the anti-oxidative effect of Coenzyme Q10 in hydrogen peroxide treated lymphocytes. *Phytomedicine*, 19(10):871–875. — *Cited for: antioxidant enzyme changes in diabetes*
+5. Satapati S, Kucejova B, Duarte JA, et al. (2015). Mitochondrial metabolism mediates oxidative stress and inflammation in fatty liver. *J Clin Invest*, 125(12):4447–4462. — *Cited for: NAFLD, TGFB1, liver fibrosis in T2DM*
+6. Kanehisa M, Goto S. (2000). KEGG: Kyoto Encyclopedia of Genes and Genomes. *Nucleic Acids Res*, 28(1):27–30. — *KEGG database used for pathway enrichment*
+7. Ashburner M, Ball CA, Blake JA, et al. (2000). Gene ontology: tool for the unification of biology. *Nat Genet*, 25(1):25–29. — *GO database used for GO enrichment*
+8. Kuleshov MV, Jones MR, Rouillard AD, et al. (2016). Enrichr: a comprehensive gene set enrichment analysis web server. *Nucleic Acids Res*, 44(W1):W90–97. — *Enrichr API used by GeneLens for GO and KEGG analysis*
+9. NCBI GEO. Dataset GSE15653. [ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE15653](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE15653)
+
 
 ---
 
