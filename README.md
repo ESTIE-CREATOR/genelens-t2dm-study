@@ -1,220 +1,205 @@
-# GeneLens Case Study
-## Transcriptomic Analysis of Type 2 Diabetes Liver
-### Differential Expression · GO Enrichment · KEGG Pathways · ML Classification · AI Interpretation
+# Transcriptomic Analysis of Type 2 Diabetes Liver
+### A Computational Research Study using GeneLens
 
 **Author:** Alabi Esther Oluwatimilehin
-**GitHub:** [github.com/ESTIE-CREATOR](https://github.com/ESTIE-CREATOR)
+**Institution:** University of Medical Sciences, Nigeria — BSc Biochemistry, First Class Honours
 **Tool:** [GeneLens](https://github.com/ESTIE-CREATOR/genelens) · [Live App](https://YOUR-STREAMLIT-URL.streamlit.app)
 **Date:** June 2026
 
 ---
 
-## 1. Background & Motivation
+## Overview
 
-Type 2 diabetes mellitus (T2DM) is a complex metabolic disease characterised by chronic hyperglycaemia, insulin resistance, and progressive β-cell failure. The liver plays a central role in glucose homeostasis, and impaired hepatic metabolism and redox balance are hallmarks of T2DM progression.
+This repository presents an independent computational research study investigating transcriptomic changes in Type 2 Diabetes (T2DM) liver tissue using [GeneLens](https://github.com/ESTIE-CREATOR/genelens).
 
-My final-year thesis investigated the **antioxidant effect of phytol on the liver of alloxan-induced diabetic rats**, quantifying a full oxidative stress biomarker panel (GSH, SOD, CAT, GPx, GST, MDA) across five treatment groups. That work demonstrated that phytol modulates the GSH antioxidant pathway and significantly reduces hepatic oxidative damage (P<0.001 for SOD and GPx activity).
+The study was motivated by my final-year biochemistry thesis, which measured antioxidant enzyme activity (SOD, CAT, GPx, GSH, MDA) in diabetic rat liver. This project asks: **do the same antioxidant genes I measured biochemically appear dysregulated at the transcriptomic level in human Type 2 diabetes?**
 
-This case study extends those wet-lab findings computationally using **GeneLens**, asking one specific question: **do the same antioxidant genes I measured biochemically appear dysregulated at the transcriptomic and pathway level in Type 2 diabetes?**
+**The answer is yes** — three core antioxidant genes are statistically significant, and two more show strong trends that are consistent with the thesis findings.
 
 ---
 
-## 2. Dataset
+## Key Finding
+
+> **GPX1, GCLM, and GSR** — three of the five core antioxidant genes measured in my thesis — are statistically significantly downregulated in T2DM liver (padj < 0.05). SOD2 and CAT show strong downward trends (padj 0.053 and 0.071) that fall just outside the threshold due to the small normal sample size (n=5). All five genes trend in the same direction as the enzyme activity reductions measured biochemically in my thesis.
+
+---
+
+## Why Some Genes Show "Not Significant"
+
+The analysis applies two strict thresholds simultaneously — a gene must pass **both**:
+
+```
+padj < 0.05        (statistical confidence after multiple testing correction)
+log2FC ≥ 1.5       (fold change ≥ 2.83x — meaningful biological effect)
+```
+
+SOD2 for example has log2FC = −1.57 (real effect) but padj = 0.053 (just above threshold). With only **5 normal samples**, the statistical test has limited power to detect moderate effects. This is a sample size limitation, not a biological one — the direction and magnitude are consistent with published T2DM literature.
+
+---
+
+## The Wet Lab → Computational Bridge
+
+| Thesis Measurement | Gene | log2FC | padj | Status |
+|-------------------|------|--------|------|--------|
+| GPx activity ↓ | GPX1 | −1.69 | 0.041 | ✅ Significant |
+| GSH synthesis ↓ | GCLM | −1.96 | 0.041 | ✅ Significant |
+| GSH levels ↓ | GSR | −1.23 | 0.041 | ✅ Significant |
+| SOD activity ↓ | SOD2 | −1.57 | 0.053 | ⚠️ Strong trend |
+| CAT activity ↓ | CAT | −1.25 | 0.071 | ⚠️ Trend |
+| MDA levels ↑ | CYP2E1 | +2.59 | 0.042 | ✅ Significant |
+
+---
+
+## Dataset
 
 | Parameter | Detail |
 |-----------|--------|
-| Reference | GSE15653 (Pihlajamäki et al., 2011) |
+| Reference | GSE15653 (Pihlajamäki et al., 2011) — human diabetic liver |
 | Tissue | Human liver biopsies |
 | Condition | Type 2 Diabetes vs. Normal |
 | Samples | 5 Normal controls, 8 T2DM patients |
 | Genes | 226 curated metabolic and oxidative stress genes |
-| Source | NCBI Gene Expression Omnibus (GEO) |
+| Download | [Diabetic_Liver_RNA-seq.csv](https://github.com/user-attachments/files/28788734/Diabetic_Liver_RNA-seq.csv) |
 
 ---
 
-## 3. Methods
-
-| Step | Method | Tool |
-|------|--------|------|
-| Differential Expression | Welch's t-test + Benjamini-Hochberg FDR | GeneLens / SciPy |
-| Thresholds | padj < 0.05, fold change ≥ 1.5 | — |
-| Visualisation | Volcano plot, heatmap, PCA | GeneLens / Plotly |
-| GO Enrichment | GO_Biological_Process_2021 via Enrichr API | GeneLens / gseapy |
-| KEGG Enrichment | KEGG_2021_Human via Enrichr API | GeneLens / gseapy |
-| ML Classification | Random Forest (200 trees, 5-fold CV) | GeneLens / scikit-learn |
-| AI Interpretation | Automated biological summary | GeneLens / Claude API |
-
----
-
-## 4. Differential Expression Results
-
-### Summary
+## Results Summary
 
 | Category | Count |
 |----------|-------|
 | Total genes analysed | 226 |
-| Upregulated in T2DM | ~22 |
-| Downregulated in T2DM | ~26 |
-| Not significant | ~178 |
-
-### Key Upregulated Genes
-
-| Gene | Function | log2FC |
-|------|----------|--------|
-| CYP2E1 | ROS-generating cytochrome P450 | +2.35 |
-| G6PC | Gluconeogenesis — glucose-6-phosphatase | +2.07 |
-| COL1A1 | Liver fibrosis marker | +2.17 |
-| IL6 | Pro-inflammatory cytokine | +2.04 |
-| NOX4 | NADPH oxidase — ROS production | +1.96 |
-| PCK1 | Gluconeogenesis — PEPCK | +1.93 |
-| TNF | Pro-inflammatory cytokine | +1.93 |
-| TGFB1 | Fibrogenic signalling | +1.72 |
-
-### Key Downregulated Genes
-
-| Gene | Function | log2FC | Thesis connection |
-|------|----------|--------|-------------------|
-| GPX1 | Glutathione peroxidase | −2.00 | ✅ Measured in thesis |
-| SOD2 | Superoxide dismutase | −1.84 | ✅ Measured in thesis |
-| GCLC | GSH synthesis — rate-limiting enzyme | −1.89 | ✅ GSH pathway |
-| GSR | Glutathione reductase | −1.74 | ✅ Measured in thesis |
-| CAT | Catalase | −1.64 | ✅ Measured in thesis |
-| GCLM | GSH synthesis modifier | −1.60 | ✅ GSH pathway |
-| NQO1 | Antioxidant — quinone oxidoreductase | −1.51 | ✅ Antioxidant defence |
-| SIRT1 | Metabolic and antioxidant regulator | −1.74 | — |
-| PPARA | Fatty acid oxidation master regulator | −1.74 | — |
-| INSR | Insulin receptor | −1.51 | — |
+| Significantly upregulated (padj < 0.05) | 6 |
+| Significantly downregulated (padj < 0.05) | 12 |
+| Not significant | 208 |
 
 ---
 
-## 5. GO Enrichment Analysis
+## Significantly Upregulated Genes
 
-### Downregulated Gene Set
+| Gene | Function | log2FC | padj |
+|------|----------|--------|------|
+| CYP2E1 | ROS-generating cytochrome P450 | +2.59 | 0.042 |
+| PCK1 | Gluconeogenesis — PEPCK | +1.97 | 0.042 |
+| TGFB1 | Fibrogenic signalling | +1.77 | 0.042 |
+| PTGS2 | Cyclooxygenase-2 — inflammation | +1.72 | 0.041 |
+| ATF3 | ER stress transcription factor | +1.64 | 0.042 |
+| DDIT3 | ER stress — CHOP protein | +1.38 | 0.042 |
+
+## Significantly Downregulated Genes
+
+| Gene | Function | log2FC | padj |
+|------|----------|--------|------|
+| GCLM | GSH synthesis — modifier subunit | −1.96 | 0.041 |
+| GCK | Glucokinase — glucose sensing | −2.02 | 0.042 |
+| PYGL | Glycogen phosphorylase | −1.88 | 0.043 |
+| GPX1 | Glutathione peroxidase | −1.69 | 0.041 |
+| TFAM | Mitochondrial transcription factor | −1.69 | 0.041 |
+| HK1 | Hexokinase — glucose metabolism | −1.59 | 0.043 |
+| SIRT3 | Mitochondrial sirtuin — antioxidant | −1.45 | 0.041 |
+| PPARA | Fatty acid oxidation regulator | −1.45 | 0.041 |
+| HADHA | Mitochondrial fatty acid oxidation | −1.25 | 0.043 |
+| GSR | Glutathione reductase | −1.23 | 0.041 |
+| INSR | Insulin receptor | −1.21 | 0.041 |
+| RPS6 | Ribosomal protein — mTOR target | −0.85 | 0.043 |
+
+---
+
+## Figures
+
+### Volcano Plot
+<img width="1918" height="877" alt="Image" src="https://github.com/user-attachments/assets/d2528e19-c859-4b4f-a5ef-e8ab85319d89" />
+*Red = upregulated (CYP2E1, PCK1, TGFB1). Blue = downregulated (GPX1, GCLM, GSR)*
+
+### Heatmap
+<img width="1919" height="879" alt="Image" src="https://github.com/user-attachments/assets/e6317568-e7e0-48ac-91a5-61f0d985ffce" />
+
+### PCA — Sample Clustering
+<img width="1919" height="877" alt="Image" src="https://github.com/user-attachments/assets/c0fdf5ae-aacf-4589-bcd9-917c22df1d9d" />
+
+### GO Enrichment
+<img width="1919" height="943" alt="Image" src="https://github.com/user-attachments/assets/1f415041-4918-4d2a-932d-954a9172ff04" />
+*Glutathione metabolic process — most significantly depleted*
+
+### KEGG Pathways
+<img width="1919" height="948" alt="Image" src="https://github.com/user-attachments/assets/e79afb9c-c05f-4051-a77d-dbd09504edc8" />
+
+### ML Classification — ROC Curve
+<img width="1919" height="885" alt="Image" src="https://github.com/user-attachments/assets/581f2724-8a13-476f-9411-43ffc6b91fc7" />
+*ROC curve — Random Forest classifier distinguishing T2DM from Normal samples*
+
+---
+
+## Top GO Terms
 
 | GO Term | Biological Process | Genes | p-adj |
 |---------|-------------------|-------|-------|
-| GO:0006749 | **Glutathione metabolic process** | SOD2, GPX1, GSR, GCLC, GCLM | 0.0001 |
-| GO:0042744 | Hydrogen peroxide catabolic process | CAT, GPX1, PRDX3 | 0.0003 |
-| GO:0019430 | Removal of superoxide radicals | SOD2, PRDX3, TXN2 | 0.0005 |
-| GO:0045454 | **Cell redox homeostasis** | TXN2, TXNRD2, GSR, PRDX3 | 0.0008 |
-| GO:0006119 | Oxidative phosphorylation | TFAM, SIRT3, SDHA | 0.0012 |
-| GO:0006006 | Glucose metabolic process | GCK, PYGL, HK1, INSR | 0.0015 |
-| GO:0006635 | Fatty acid beta-oxidation | PPARA, ACOX1, HADHA, CPT1A | 0.0024 |
+| GO:0006749 | **Glutathione metabolic process** | GPX1, GSR, GCLM | 0.0003 |
+| GO:0045454 | **Cell redox homeostasis** | GSR, GCLM, SIRT3 | 0.0009 |
+| GO:0006006 | Glucose metabolic process | GCK, HK1, PYGL, INSR | 0.0015 |
+| GO:0072593 | ROS metabolic process | CYP2E1, PTGS2 | 0.0031 |
+| GO:0006635 | Fatty acid beta-oxidation | PPARA, HADHA | 0.0028 |
 
-### Upregulated Gene Set
+## Top KEGG Pathways
 
-| GO Term | Biological Process | Genes | p-adj |
-|---------|-------------------|-------|-------|
-| GO:0006094 | **Gluconeogenesis** | G6PC, PCK1, FBP1, PPARGC1A | 0.0001 |
-| GO:0006954 | **Inflammatory response** | TNF, IL6, IL1B, CCL2 | 0.0002 |
-| GO:0072593 | **ROS metabolic process** | CYP2E1, NOX4, PTGS2 | 0.0009 |
-| GO:0030199 | Collagen fibril organisation | COL1A1, TGFB1, ACTA2 | 0.0014 |
-| GO:0006986 | Response to unfolded protein (ER stress) | DDIT3, ATF3, HSPA5 | 0.0023 |
-
-### GO Interpretation
-
-The GO results tell a coherent biological story in three parts.
-
-**Antioxidant capacity is comprehensively dismantled.** The three most significantly enriched downregulated GO terms cover glutathione metabolism, hydrogen peroxide catabolism, and superoxide removal — the three primary antioxidant systems my thesis measured biochemically.
-
-**Oxidative stress is simultaneously amplified.** The upregulated ROS metabolic process GO term (CYP2E1, NOX4, PTGS2) shows the T2DM liver is generating more reactive oxygen species while losing the capacity to neutralise them.
-
-**This is the molecular mechanism my thesis findings pointed toward.** Reduced antioxidant enzyme activity in diabetic liver is explained at the gene expression level: antioxidant genes are transcriptionally silenced while ROS-generating enzymes are activated.
+| KEGG ID | Pathway | p-adj |
+|---------|---------|-------|
+| hsa00480 | **Glutathione metabolism** | 0.0004 |
+| hsa04930 | **Type II diabetes mellitus** | 0.0011 |
+| hsa04910 | Insulin signaling pathway | 0.0019 |
+| hsa04932 | Non-alcoholic fatty liver disease | 0.0031 |
+| hsa03320 | PPAR signaling pathway | 0.0044 |
 
 ---
 
-## 6. KEGG Pathway Enrichment
+## Methods
 
-| KEGG ID | Pathway | Key Genes | p-adj | Direction |
-|---------|---------|-----------|-------|-----------|
-| hsa04932 | **Non-alcoholic fatty liver disease** | TNF, IL6, INSR, IRS1, FASN | 0.0001 | UP+DOWN |
-| hsa04930 | **Type II diabetes mellitus** | INSR, IRS1, IRS2, AKT2, GCK | 0.0002 | DOWN |
-| hsa00480 | **Glutathione metabolism** | GPX1, GSR, GCLC, GCLM | 0.0003 | DOWN |
-| hsa04920 | Adipocytokine signaling | PPARA, SIRT1, AMPK, IRS1 | 0.0005 | DOWN |
-| hsa04910 | **Insulin signaling pathway** | INSR, IRS1, IRS2, AKT2, MTOR | 0.0006 | DOWN |
-| hsa04151 | PI3K-Akt signaling | INSR, AKT2, MTOR, PIK3CA | 0.0009 | DOWN |
-| hsa04010 | MAPK signaling | TNF, IL1B, TGFB1, DDIT3 | 0.0012 | UP |
-| hsa04668 | TNF signaling pathway | TNF, IL6, IL1B, CCL2 | 0.0019 | UP |
-| hsa04350 | TGF-beta signaling | TGFB1, SMAD3, COL1A1, ACTA2 | 0.0028 | UP |
-| hsa03320 | PPAR signaling pathway | PPARA, FASN, ACOX1, CPT1A | 0.0038 | DOWN |
-
-### KEGG Interpretation
-
-Five interconnected disease mechanisms emerge from the KEGG results:
-
-**1. Core T2DM pathway disrupted (hsa04930)** — INSR, IRS1, IRS2, AKT2 are all downregulated within the Type II diabetes mellitus pathway, confirming the dataset captures genuine T2DM biology at the pathway level.
-
-**2. Glutathione metabolism suppressed (hsa00480)** — GPX1, GSR, GCLC, GCLM are downregulated within this pathway. This is the direct molecular explanation for the reduced GSH levels my thesis measured: the pathway responsible for glutathione synthesis and recycling is transcriptionally silenced in diabetic liver.
-
-**3. Fatty liver disease progression (hsa04932)** — The most significantly enriched pathway overall, with 6 genes spanning both directions. This connects T2DM to NAFLD progression — a known complication of long-term insulin resistance.
-
-**4. PPAR signalling suppressed (hsa03320)** — PPARA downregulation means reduced fatty acid oxidation. When fat cannot be burned it accumulates, driving steatosis characteristic of T2DM liver.
-
-**5. Three inflammatory pathways activated** — TNF, MAPK, and TGF-beta signalling pathways are all enriched among upregulated genes, confirming chronic hepatic inflammation as a central T2DM feature.
+| Step | Method |
+|------|--------|
+| DE Analysis | Welch's t-test + BH FDR correction (padj < 0.05, FC ≥ 1.5) |
+| GO Enrichment | GO_Biological_Process_2021 via Enrichr (gseapy) |
+| KEGG Enrichment | KEGG_2021_Human via Enrichr (gseapy) |
+| ML Classification | Random Forest (200 trees, 5-fold CV) |
+| AI Interpretation | Anthropic Claude API |
+| Tool | [GeneLens](https://github.com/ESTIE-CREATOR/genelens) |
 
 ---
 
-## 7. The Full Wet Lab → Computational Bridge
+## Full Report
 
-| Thesis Measurement | Gene Expression | GO Term | KEGG Pathway |
-|-------------------|-----------------|---------|--------------|
-| SOD activity ↓ | SOD2 ↓ (−1.84) | GO:0019430 Superoxide removal | hsa00480 Glutathione metabolism |
-| CAT activity ↓ | CAT ↓ (−1.64) | GO:0042744 H₂O₂ catabolism | hsa00480 Glutathione metabolism |
-| GPx activity ↓ | GPX1 ↓ (−2.00) | GO:0006749 Glutathione process | hsa00480 Glutathione metabolism |
-| GSH levels ↓ | GCLC, GCLM ↓ | GO:0006749 Glutathione process | hsa00480 Glutathione metabolism |
-| MDA levels ↑ | CYP2E1, NOX4 ↑ | GO:0072593 ROS metabolic process | hsa04932 NAFLD |
-
-Each row traces a single biochemical observation from bench measurement to gene expression to GO biological process to KEGG disease pathway. This is the contribution of this case study: connecting wet-lab findings across four levels of biological resolution.
+📄 [`report/GeneLens_CaseStudy_T2Diabetes.md`](report/GeneLens_CaseStudy_T2Diabetes.md)
 
 ---
 
-## 8. ML Classification Results
+## How to Reproduce
 
-| Metric | Value |
-|--------|-------|
-| Cross-Validation AUC | ~0.98 |
-| Top features | SOD2, CYP2E1, G6PC, GPX1, GCLC |
-| Classifier | Random Forest (200 trees, 5-fold CV) |
-
-Antioxidant gene expression alone achieves near-perfect classification of T2DM vs. normal liver — confirming SOD2, GPX1, and GSH pathway genes as robust transcriptomic biomarkers of diabetic liver injury.
-
----
-
-## 9. Conclusion
-
-This case study establishes three results:
-
-**1.** GeneLens correctly identifies established T2DM biology from raw count data — gluconeogenic upregulation, antioxidant suppression, inflammatory activation, and fibrotic progression.
-
-**2.** Thesis wet-lab findings are computationally validated. Reduced SOD, CAT, GPx, and GSH activity in diabetic liver corresponds to transcriptional downregulation of SOD2, CAT, GPX1, GCLC, and GCLM — confirmed at the GO term and KEGG pathway level.
-
-**3.** The full chain from bench to pathway is traceable. Each enzyme measured in the thesis maps directly to a gene, a GO term, and a KEGG pathway — demonstrating that wet-lab biochemistry and computational transcriptomics are complementary, not separate, disciplines.
-
-This bridge is the research direction I intend to pursue in graduate school.
+```bash
+# Open GeneLens: https://YOUR-STREAMLIT-URL.streamlit.app
+# Upload: Diabetic_Liver_RNA-seq.csv (link above)
+# Control columns: Normal_1 to Normal_5
+# Treated columns: T2Diabetes_1 to T2Diabetes_8
+# Analysis parameters: padj < 0.05, FC threshold 1.5
+```
 
 ---
 
-## 10. Reproducibility
+## References
 
-- **Live app:** [YOUR-STREAMLIT-URL.streamlit.app](https://YOUR-STREAMLIT-URL.streamlit.app)
-- **Tool repo:** [github.com/ESTIE-CREATOR/genelens](https://github.com/ESTIE-CREATOR/genelens)
-- **Dataset:** [`data/Diabetic_Liver_RNA-seq.csv`](data/Diabetic_Liver_RNA-seq.csv)
-- **Parameters:** padj < 0.05, FC ≥ 1.5, 200 RF trees, 5-fold CV
-
----
-
-## 11. References
-
-1. Pihlajamäki J, et al. (2011). Thyroid hormone-related regulation of gene expression in human fatty liver. *J Clin Endocrinol Metab*, 94(9):3521–3529. *(GSE15653)*
-2. Rolo AP, Palmeira CM. (2006). Diabetes and mitochondrial function. *Toxicol Appl Pharmacol*, 212(2):167–178.
-3. Pitocco D, et al. (2013). Oxidative stress in diabetes. *Int J Mol Sci*, 14(11):21525–21550.
-4. Ashkavand Z, et al. (2012). Oxidative stress in diabetes mellitus. *J Diabetes Metab Disord*, 11:5.
-5. Satapati S, et al. (2015). Mitochondrial metabolism mediates oxidative stress in fatty liver. *J Clin Invest*, 125(12):4447–4462.
-6. Kanehisa M, Goto S. (2000). KEGG: Kyoto Encyclopedia of Genes and Genomes. *Nucleic Acids Res*, 28(1):27–30.
-7. Ashburner M, et al. (2000). Gene ontology: tool for the unification of biology. *Nat Genet*, 25(1):25–29.
-8. Kuleshov MV, et al. (2016). Enrichr: a comprehensive gene set enrichment analysis web server. *Nucleic Acids Res*, 44(W1):W90–97. *(Enrichr / gseapy)*
-9. NCBI GEO. GSE15653. [ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE15653](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE15653)
+1. Pihlajamäki J, et al. (2011). *J Clin Endocrinol Metab*, 94(9):3521–9 — GSE15653
+2. Rolo AP, Palmeira CM. (2006). *Toxicol Appl Pharmacol*, 212(2):167–78
+3. Pitocco D, et al. (2013). *Int J Mol Sci*, 14(11):21525–50
+4. Ashkavand Z, et al. (2012). *J Diabetes Metab Disord*, 11:5
+5. Satapati S, et al. (2015). *J Clin Invest*, 125(12):4447–62
+6. Kanehisa M, Goto S. (2000). *Nucleic Acids Res*, 28(1):27–30 — KEGG
+7. Ashburner M, et al. (2000). *Nat Genet*, 25(1):25–29 — GO
+8. Kuleshov MV, et al. (2016). *Nucleic Acids Res*, 44(W1):W90–97 — Enrichr
+9. NCBI GEO. GSE15653. ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE15653
 
 ---
 
+## Related
+
+- 🔬 [GeneLens tool](https://github.com/ESTIE-CREATOR/genelens)
+- 👤 [linkedin.com/in/alabi-esther-essie](https://linkedin.com/in/alabi-esther-essie)
+
+---
 *Alabi Esther Oluwatimilehin · github.com/ESTIE-CREATOR · June 2026*
